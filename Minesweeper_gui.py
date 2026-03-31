@@ -31,17 +31,23 @@ buttons = tk.Frame(game_grid)
 buttons.grid()
 for cell_x in range(core.row):
     for cell_y in range(core.column):
-        tk.Button(buttons, text=f"({cell_x}, {cell_y})").grid(row=cell_x, column=cell_y)
+        cell = tk.Button(buttons, text=f"({cell_x}, {cell_y})")
+        cell.grid(row=cell_x, column=cell_y)
+        core.grid.append(cell)
+
+for cell in core.grid:
+    cell.config(command=lambda c=cell: core.cell_clicked(c))
 
 
 # timer
 timer_frame = tk.Frame(frm, bg="yellow")
 timer_frame.grid(row=2, column=0, padx=50, pady=50)
 
-timer = tk.Label(timer_frame, text=f"00:00")
+timer = tk.Label(timer_frame, text="00:00")
 timer.grid()
 
 def increase_timer():
+    '''Increases the timer each second'''
     core.seconds += 1
 
     mins = core.seconds // 60
