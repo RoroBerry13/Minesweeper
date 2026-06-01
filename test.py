@@ -1,5 +1,6 @@
 import tkinter as tk
 import random
+from tkinter import messagebox
 
 class Grid():
     def __init__(self, row= 5, column= 5, mines= 5):
@@ -26,8 +27,8 @@ class Grid():
 
     def generate_mines(self):
         '''This function generates mines in the grid in random coordinates'''
-        random_x = random.randrange(0,5)
-        random_y = random.randrange(0,5)
+        random_x = random.randrange(0, self.rows)
+        random_y = random.randrange(0, self.columns)
 
         if self.grid[random_x][random_y] == 0:
             self.grid[random_x][random_y] = '*'
@@ -82,5 +83,7 @@ class Grid():
                     number_of_mines = self.calculate_adjacent_mines(x, y)
                     self.grid[x][y] = number_of_mines
 
-new_grid = Grid(10, 10, 20)
-new_grid.print_dimensions()
+grid = Grid(10, 10, 20)
+
+def game_over():
+    retry = messagebox.askokcancel(title='Game Over!', message='You lost! would you like to play again?')

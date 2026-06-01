@@ -1,84 +1,89 @@
+import tkinter as tk
 import random
 from tkinter import messagebox
 
-# game dimentions
-width = 5
-height = 5
-grid = [
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0]
-]
+class Grid():
+    def __init__(self, row= 5, column= 5, mines= 5):
+        self.rows = row
+        self.columns = column
+        self.grid = []
+        self.mines = mines
 
-# generate mines
-def generate_mines():
-    '''This function generates mines in the grid in random coordinates'''
-    random_x = random.randrange(0,5)
-    random_y = random.randrange(0,5)
+        self.create_grid()
+        for i in range(mines):
+            self.generate_mines()
+        self.add_numbers()
 
-    if grid[random_x][random_y] == 0:
-        grid[random_x][random_y] = '*'
-    else:
-        generate_mines()
+    def create_grid(self):
+        '''This function creates an empty grid'''
+        for row in range(self.rows):
+            new_row = []
+            for column in range(self.columns):
+                new_row.append(0)
+            self.grid.append(new_row)
 
-# add numbers to cells
-def calculate_adjacent_mines(x, y):
-    '''This function calculates the number of adjacent mines of each cell in a 3x3 grid'''
-    # 3x3 grid of adjacent mines
-    temp_grid = [
-        ['', '', ''],
-        ['', grid[x][y], ''],
-        ['', '', '']
-    ]
+    def print_dimensions(self):
+        print(self.grid)
 
-    # check x index
-    if not x - 1 < 0:
-        temp_grid[0][1] = grid[x-1][y]
+    def generate_mines(self):
+        '''This function generates mines in the grid in random coordinates'''
+        random_x = random.randrange(0, self.rows)
+        random_y = random.randrange(0, self.columns)
+
+        if self.grid[random_x][random_y] == 0:
+            self.grid[random_x][random_y] = '*'
+        else:
+            self.generate_mines()
+
+    def calculate_adjacent_mines(self, x, y):
+        '''This function calculates the number of adjacent mines of each cell in a 3x3 grid'''
+        # 3x3 grid of adjacent mines
+        temp_grid = [
+            ['', '', ''],
+            ['', self.grid[x][y], ''],
+            ['', '', '']
+        ]
+
+        # check x index
+        if not x - 1 < 0:
+            temp_grid[0][1] = self.grid[x-1][y]
+            if not y - 1 < 0:
+                temp_grid[0][0] = self.grid[x-1][y-1]
+            if not y + 1 > self.columns - 1:
+                temp_grid[0][2] = self.grid[x-1][y+1]
+
+        if not x + 1 > self.rows - 1:
+            temp_grid[2][1] = self.grid[x+1][y]
+            if not y - 1 < 0:
+                temp_grid[2][0] = self.grid[x+1][y-1]
+            if not y + 1 > self.columns - 1:
+                temp_grid[2][2] = self.grid[x+1][y+1]
+
+        # check y index
         if not y - 1 < 0:
-            temp_grid[0][0] = grid[x-1][y-1]
-        if not y + 1 > height - 1:
-            temp_grid[0][2] = grid[x-1][y+1]
+            temp_grid[1][0] = self.grid[x][y-1]
+        if not y + 1 > self.columns - 1:
+            temp_grid[1][2] = self.grid[x][y+1]
 
-    if not x + 1 > height - 1:
-        temp_grid[2][1] = grid[x+1][y]
-        if not y - 1 < 0:
-            temp_grid[2][0] = grid[x+1][y-1]
-        if not y + 1 > width - 1:
-            temp_grid[2][2] = grid[x+1][y+1]
+        number_of_mines = 0
+        for row in temp_grid:
+            for column in row:
+                if column == '*':
+                    number_of_mines += 1
 
-    # check y index
-    if not y - 1 < 0:
-        temp_grid[1][0] = grid[x][y-1]
-    if not y + 1 > width - 1:
-        temp_grid[1][2] = grid[x][y+1]
+        return number_of_mines
 
-    number_of_mines = 0
-    for row in temp_grid:
-        for column in row:
-            if column == '*':
-                number_of_mines += 1
+    def add_numbers(self):
+        '''This function displays the number of adjacent mines in each cell'''
+        for x in range(self.rows):
+            for y in range(self.columns):
+                if self.grid[x][y] == '*':
+                    continue
+                else:
+                    number_of_mines = self.calculate_adjacent_mines(x, y)
+                    self.grid[x][y] = number_of_mines
 
-    return number_of_mines
-
-def add_numbers():
-    '''This function displays the number of adjacent mines in each cell'''
-    for x in range(height):
-        for y in range(width):
-            if grid[x][y] == '*':
-                continue
-            else:
-                number_of_mines = calculate_adjacent_mines(x, y)
-                grid[x][y] = number_of_mines
-
-# game logic
-def start_new_game():
-    for i in range(5):
-        generate_mines()
-    add_numbers()
-
-start_new_game()
+grid = Grid(10, 10, 20)
 
 def game_over():
     retry = messagebox.askokcancel(title='Game Over!', message='You lost! would you like to play again?')
