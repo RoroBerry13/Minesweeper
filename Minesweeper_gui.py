@@ -13,10 +13,10 @@ frame.columnconfigure(0, weight=1)
 for row in range(len(core.grid)):
     for column in range(len(core.grid[row])):
         if core.grid[row][column] == '*':
-            cell = tk.Button(frame, text=core.grid[row][column], command=core.game_over)
+            cell = tk.Button(frame, text=core.grid[row][column], command=core.game_over, width=10, height=5)
             cell.grid(row=row, column=column)
         else:
-            cell = tk.Button(frame, text= core.grid[row][column])
+            cell = tk.Button(frame, text= core.grid[row][column], width=10, height=5)
             cell.grid(row=row, column=column)
 
 window.mainloop()

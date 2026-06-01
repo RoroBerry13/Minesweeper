@@ -73,6 +73,7 @@ def add_numbers():
                 grid[x][y] = number_of_mines
 
 add_numbers()
+print(grid)
 
 def game_over():
     messagebox.askokcancel(title='Game Over!', message='You lost! would you like to play again?')
