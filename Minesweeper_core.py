@@ -103,17 +103,17 @@ class Cell(tk.Button):
 
     def clicked(self):
         self.config(state="disabled", bg= "white")
-        self.is_visible = True
-        self.clear_adjacent_zeros()
         if self.is_mine:
             self.config(bg="red")
             retry = messagebox.askokcancel("Game Over!", "You Lost! would you like to play again?")
+        elif self.value == 0:
+            self.clear_adjacent_zeros()
         else:
             self.config(bg="white")
-            if self.value != 0:
-                self.config(text=self.value)
+            self.config(text=self.value)
 
     def clear_adjacent_zeros(self):
+        self.is_visible = True
         # create temp 3x3 grid of adjacent cells
         temp_grid = [
             ['', '', ''],
@@ -143,6 +143,7 @@ class Cell(tk.Button):
             temp_grid[1][2] = grid.grid_cells[self.x_index][self.y_index+1]
 
         print(temp_grid)
+        temp_grid[1][1] == ''
 
         for row in temp_grid:
             for cell in row:
@@ -150,10 +151,13 @@ class Cell(tk.Button):
                     continue
                 else:
                     if not cell == '':
-                        if cell.value == 0:
-                            print("code works so far")
-
-
+                        if cell.is_visible == False:
+                            cell.is_visible == True
+                            cell.config(state= "disabled", bg="white")
+                            if cell.value == 0:
+                                cell.clear_adjacent_zeros()
+                            else:
+                                cell.config(text=cell.value)
     
-blueprint = GridBlueprint(10, 10, 20)
+blueprint = GridBlueprint(10, 10, 10)
 grid = GameGrid()
