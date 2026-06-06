@@ -83,7 +83,20 @@ class Grid():
                     number_of_mines = self.calculate_adjacent_mines(x, y)
                     self.grid[x][y] = number_of_mines
 
-grid = Grid(10, 10, 20)
+class Cell(tk.Button):
+    def __init__(self, x_index, y_index, value= 0, is_mine= False, master = None, bg ='white', command = "", compound = "none", cursor = "", default = "disabled", font = "TkDefaultFont", height = 0, image = "", justify = "center", overrelief = "", state = "normal", takefocus = "", text = "", underline = -1, width = 0, wraplength = 0):
+        super().__init__(master, bg=bg, command=command, compound=compound, cursor=cursor, default=default, font=font, height=height, image=image, justify=justify, overrelief=overrelief, state=state, takefocus=takefocus, text=text, underline=underline, width=width, wraplength=wraplength)
+        self.x_index= x_index
+        self.y_index= y_index
+        self.value = value
+        self.is_mine = is_mine
 
-def game_over():
-    retry = messagebox.askokcancel(title='Game Over!', message='You lost! would you like to play again?')
+        self.config(command=self.clicked)
+
+    def clicked(self):
+        self.config(state="disabled", text=self.value, bg= "white")
+        if self.is_mine:
+            self.config(bg="red")
+            retry = messagebox.askokcancel("Game Over!", "You Lost! would you like to play again?")
+    
+grid = Grid(10, 10, 20)
