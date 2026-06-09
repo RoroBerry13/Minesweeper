@@ -38,6 +38,7 @@ grid_buttons()
 
 def button_clicked(button):
     button.config(state="disabled", bg= "white")
+    button.is_visible = True
     if button.is_mine:
         button.config(bg="red")
         retry = messagebox.askokcancel("Game Over", "You Lost! Would you like to play again?")
@@ -47,6 +48,9 @@ def button_clicked(button):
         button.clear_adjacent_zeros()
     else:
         button.config(bg="white", text=button.value)
+    game_won = core.game_grid.check_all_buttons_clicked()
+    if game_won:
+        messagebox.askokcancel("You won!", "Play again?")
 
 def apply_command_to_buttons():
     for row in core.game_grid.grid_cells:

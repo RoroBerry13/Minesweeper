@@ -6,9 +6,8 @@ class GridBlueprint():
     def __init__(self, row= 5, column= 5, mines= 5):
         self.rows = row
         self.columns = column
-        self.blueprint = []
+        self.blueprint = [['*', 2, 0, 0, 0, 0, 0, 0, 0, 0], ['*', 2, 0, 0, 0, 0, 0, 0, 0, 0], [2, 2, 1, 0, 0, 0, 0, 1, 1, 1], [1, '*', 2, 1, 1, 0, 0, 1, '*', 1], [1, 1, 2, '*', 1, 0, 0, 2, 2, 2], [0, 0, 2, 2, 2, 0, 0, 1, '*', 1], [0, 0, 1, '*', 1, 0, 0, 1, 1, 1], [1, 1, 1, 2, 2, 1, 0, 0, 0, 0], ['*', 1, 0, 1, '*', 1, 0, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 1, '*', 1]]
         self.mines = mines
-        self.create_grid()
 
     def create_grid(self):
         self.__create_empty_grid()
@@ -101,6 +100,15 @@ class GameGrid:
         for widget in self.frame.winfo_children():
             widget.destroy()
 
+    def check_all_buttons_clicked(self):
+        for row in self.grid_cells:
+            for button in row:
+                if button.is_mine:
+                    continue
+                elif button.is_visible == False and button.is_mine == False:
+                    return False
+        return True
+
 class Cell(tk.Button):
     def __init__(self, x_index, y_index, master = None, bg ='white', command = "", compound = "none", cursor = "", default = "disabled", font = "TkDefaultFont", height = 0, image = "", justify = "center", overrelief = "", state = "normal", takefocus = "", text = "", underline = -1, width = 0, wraplength = 0):
         super().__init__(master, bg=bg, command=command, compound=compound, cursor=cursor, default=default, font=font, height=height, image=image, justify=justify, overrelief=overrelief, state=state, takefocus=takefocus, text=text, underline=underline, width=width, wraplength=wraplength)
@@ -152,7 +160,7 @@ class Cell(tk.Button):
                 else:
                     if not cell == '':
                         if cell.is_visible == False:
-                            cell.is_visible == True
+                            cell.is_visible = True
                             cell.config(state= "disabled", bg="white")
                             if cell.value == 0:
                                 cell.clear_adjacent_zeros()
@@ -160,4 +168,5 @@ class Cell(tk.Button):
                                 cell.config(text=cell.value)
     
 blueprint = GridBlueprint(10, 10, 10)
+print(blueprint.blueprint)
 game_grid = GameGrid()
