@@ -117,9 +117,12 @@ class Cell(tk.Button):
         self.value = blueprint.blueprint[x_index][y_index]
         self.is_visible = False
         self.is_mine = False
+        self.is_flagged = False
 
         if self.value == '*':
             self.is_mine = True
+
+        self.bind('<Button-3>', self.flag_cell)
 
     def clear_adjacent_zeros(self):
         self.is_visible = True
@@ -133,7 +136,7 @@ class Cell(tk.Button):
         # check x index
         if not self.x_index - 1 < 0:
             temp_grid[0][1] = game_grid.grid_cells[self.x_index-1][self.y_index]
-            if not self.x_index - 1 < 0:
+            if not self.y_index - 1 < 0:
                 temp_grid[0][0] = game_grid.grid_cells[self.x_index-1][self.y_index-1]
             if not self.y_index + 1 > blueprint.columns - 1:
                 temp_grid[0][2] = game_grid.grid_cells[self.x_index-1][self.y_index+1]
@@ -166,6 +169,15 @@ class Cell(tk.Button):
                                 cell.clear_adjacent_zeros()
                             else:
                                 cell.config(text=cell.value)
+
+    def flag_cell(self, event):
+        if not self.is_visible:
+            if not self.is_flagged:
+                self.config(bg="yellow", state="disabled")
+                self.is_flagged = True
+            else:
+                self.config(bg="blue", state="normal")
+                self.is_flagged = False
     
 blueprint = GridBlueprint(10, 10, 10)
 print(blueprint.blueprint)

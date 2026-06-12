@@ -50,7 +50,9 @@ def button_clicked(button):
         button.config(bg="white", text=button.value)
     game_won = core.game_grid.check_all_buttons_clicked()
     if game_won:
-        messagebox.askokcancel("You won!", "Play again?")
+        play_again = messagebox.askokcancel("You won!", "Play again?")
+        if play_again:
+            new_game()
 
 def apply_command_to_buttons():
     for row in core.game_grid.grid_cells:
