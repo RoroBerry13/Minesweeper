@@ -14,7 +14,7 @@ file_menu = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="File", menu=file_menu)
 
 def new_game():
-    core.blueprint.create_grid()
+    core.blueprint.create_empty_grid()
     core.game_grid.destroy_grid()
     grid_buttons()
 
@@ -37,6 +37,9 @@ def grid_buttons():
 grid_buttons()
 
 def button_clicked(button):
+    if core.game_grid.check_grid():
+        core.blueprint.generate_grid(button.x_index, button.y_index)
+        core.game_grid.add_value_to_buttons()
     button.config(state="disabled", bg= "white")
     button.is_visible = True
     if button.is_mine:
@@ -48,7 +51,7 @@ def button_clicked(button):
         button.clear_adjacent_zeros()
     else:
         button.config(bg="white", text=button.value)
-    game_won = core.game_grid.check_all_buttons_clicked()
+    game_won = core.game_grid.check_game_won()
     if game_won:
         play_again = messagebox.askokcancel("You won!", "Play again?")
         if play_again:

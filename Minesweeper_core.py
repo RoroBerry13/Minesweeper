@@ -1,21 +1,16 @@
 import tkinter as tk
 import random
-from tkinter import messagebox
 
 class GridBlueprint():
     def __init__(self, row= 5, column= 5, mines= 5):
         self.rows = row
         self.columns = column
-        self.blueprint = [['*', 2, 0, 0, 0, 0, 0, 0, 0, 0], ['*', 2, 0, 0, 0, 0, 0, 0, 0, 0], [2, 2, 1, 0, 0, 0, 0, 1, 1, 1], [1, '*', 2, 1, 1, 0, 0, 1, '*', 1], [1, 1, 2, '*', 1, 0, 0, 2, 2, 2], [0, 0, 2, 2, 2, 0, 0, 1, '*', 1], [0, 0, 1, '*', 1, 0, 0, 1, 1, 1], [1, 1, 1, 2, 2, 1, 0, 0, 0, 0], ['*', 1, 0, 1, '*', 1, 0, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 1, '*', 1]]
+        self.blueprint = []
         self.mines = mines
 
-    def create_grid(self):
-        self.__create_empty_grid()
-        for i in range(self.mines):
-            self.__generate_mines()
-        self.__add_numbers()
+        self.create_empty_grid()
 
-    def __create_empty_grid(self):
+    def create_empty_grid(self):
         '''This function creates an empty grid'''
         self.blueprint = []
         for row in range(self.rows):
@@ -24,15 +19,24 @@ class GridBlueprint():
                 new_row.append(0)
             self.blueprint.append(new_row)
 
-    def __generate_mines(self):
-        '''This function generates mines in the grid in random coordinates'''
+    def generate_grid(self, button_x, button_y):
+        '''This function generates the grid's values after a cell is pressed'''
+        for i in range(self.mines):
+            self.__generate_mine(button_x, button_y)
+        self.__add_numbers()
+        print(blueprint.blueprint)
+
+    def __generate_mine(self, button_x, button_y):
+        '''This function creates a mine in a random coordinate'''
         random_x = random.randrange(0, self.rows)
         random_y = random.randrange(0, self.columns)
 
+        if random_x == button_x and random_y == button_y:
+            self.__generate_mine(button_x, button_y)
         if self.blueprint[random_x][random_y] == 0:
             self.blueprint[random_x][random_y] = '*'
         else:
-            self.__generate_mines()
+            self.__generate_mine(button_x, button_y)
 
     def __calculate_adjacent_mines(self, x, y):
         '''This function calculates the number of adjacent mines of each cell in a 3x3 grid'''
@@ -88,19 +92,39 @@ class GameGrid:
         self.frame = frame
 
     def create_buttons(self):
+        '''This function creates value-less button objects'''
         for x in range(blueprint.rows):
             new_row = []
             for y in range(blueprint.columns):
                 cell = Cell(master=self.frame, x_index=x, y_index=y, width=10, height=5, bg="blue")
                 new_row.append(cell)
             game_grid.grid_cells.append(new_row)
+
+    def check_grid(self):
+        '''This function checks if no cell is clicked in the grid'''
+        for row in self.grid_cells:
+            for cell in row:
+                if cell.is_visible:
+                    return False
+        return True
+    
+    def add_value_to_buttons(self):
+        '''This function adds values to the button objects after the grid is created'''
+        for x in range(blueprint.rows):
+            for y in range(blueprint.columns):
+                button = self.grid_cells[x][y]
+                button.value = blueprint.blueprint[x][y]
+                if blueprint.blueprint[x][y] == '*':
+                    button.is_mine = True
     
     def destroy_grid(self):
+        '''This function deletes the button objects'''
         self.grid_cells = []
         for widget in self.frame.winfo_children():
             widget.destroy()
 
-    def check_all_buttons_clicked(self):
+    def check_game_won(self):
+        '''This function checks if all the non-mine buttons are clicked'''
         for row in self.grid_cells:
             for button in row:
                 if button.is_mine:
@@ -119,12 +143,10 @@ class Cell(tk.Button):
         self.is_mine = False
         self.is_flagged = False
 
-        if self.value == '*':
-            self.is_mine = True
-
         self.bind('<Button-3>', self.flag_cell)
 
     def clear_adjacent_zeros(self):
+        '''This function checks all the cells in a 3x3 area to clear any adjacent zeros'''
         self.is_visible = True
         # create temp 3x3 grid of adjacent cells
         temp_grid = [
@@ -171,6 +193,7 @@ class Cell(tk.Button):
                                 cell.config(text=cell.value)
 
     def flag_cell(self, event):
+        '''This function enables the flagging of potential mine cells'''
         if not self.is_visible:
             if not self.is_flagged:
                 self.config(bg="yellow", state="disabled")
@@ -180,5 +203,4 @@ class Cell(tk.Button):
                 self.is_flagged = False
     
 blueprint = GridBlueprint(10, 10, 10)
-print(blueprint.blueprint)
 game_grid = GameGrid()
