@@ -17,7 +17,6 @@ def new_game():
     core.blueprint.create_grid()
     core.game_grid.destroy_grid()
     grid_buttons()
-    apply_command_to_buttons()
 
 file_menu.add_command(label="Create_new_game", command=lambda:new_game())
 file_menu.add_command(label="Exit", command=window.quit)
@@ -32,6 +31,7 @@ def grid_buttons():
     core.game_grid.create_buttons()
     for row in core.game_grid.grid_cells:
         for button in row:
+            button.config(command=lambda button=button: button_clicked(button))
             button.grid(row= button.x_index, column= button.y_index)
 
 grid_buttons()
@@ -53,12 +53,5 @@ def button_clicked(button):
         play_again = messagebox.askokcancel("You won!", "Play again?")
         if play_again:
             new_game()
-
-def apply_command_to_buttons():
-    for row in core.game_grid.grid_cells:
-        for button in row:
-            button.config(command=lambda button=button: button_clicked(button))
-
-apply_command_to_buttons()
 
 window.mainloop()
