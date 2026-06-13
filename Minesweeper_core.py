@@ -75,16 +75,24 @@ class GridBlueprint():
                     self.blueprint[x][y] = number_of_mines
 
 class GameGrid:
-    def __init__(self, frame= None):
+    def __init__(self, grid_frame= None, label_frame = None):
         self.grid_cells = []
-        self.frame = frame
+        self.grid_frame = grid_frame
+        self.remaining_mines = blueprint.mines
+        self.label_frame = label_frame
+        self.label = None
+
+    def create_label(self):
+        label = tk.Label(self.label_frame, text=f"Remaining mines: {self.remaining_mines}", font=20)
+        self.label = label
+        return label
 
     def create_buttons(self):
         '''This function creates value-less button objects'''
         for x in range(blueprint.rows):
             new_row = []
             for y in range(blueprint.columns):
-                cell = Cell(master=self.frame, x_index=x, y_index=y, width=10, height=5, bg="blue")
+                cell = Cell(master=self.frame, x_index=x, y_index=y, width=8, height=4, bg="blue")
                 new_row.append(cell)
             game_grid.grid_cells.append(new_row)
 
@@ -161,9 +169,13 @@ class Cell(tk.Button):
             if not self.is_flagged:
                 self.config(bg="yellow", state="disabled")
                 self.is_flagged = True
+                game_grid.remaining_mines -= 1
+                game_grid.label.config(text=f"Remaining mines: {game_grid.remaining_mines}")
             else:
                 self.config(bg="blue", state="normal")
                 self.is_flagged = False
+                game_grid.remaining_mines += 1
+                game_grid.label.config(text=f"Remaining mines: {game_grid.remaining_mines}")
 
 def create_temp_grid(x, y, array):
     cell = array[x][y]
@@ -196,5 +208,6 @@ def create_temp_grid(x, y, array):
 
     return temp_grid
     
+bg_colour = "#73a3f0"
 blueprint = GridBlueprint(10, 10, 10)
 game_grid = GameGrid()

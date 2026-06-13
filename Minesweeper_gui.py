@@ -7,6 +7,7 @@ window.geometry('800x875')
 
 menu = tk.Menu(window)
 window.config(menu=menu)
+window.title('Minesweeper')
 window.rowconfigure(0, weight=1)
 window.columnconfigure(0, weight=1)
 
@@ -16,13 +17,22 @@ menu.add_cascade(label="File", menu=file_menu)
 def new_game():
     core.blueprint.create_empty_grid()
     core.game_grid.destroy_grid()
+    core.game_grid.remaining_mines = core.blueprint.mines
+    core.game_grid.label.config(text=f"Remaining mines: {core.game_grid.remaining_mines}")
     grid_buttons()
 
 file_menu.add_command(label="Create_new_game", command=lambda:new_game())
 file_menu.add_command(label="Exit", command=window.quit)
 
-grid_frame = tk.Frame(window, bg='red')
-grid_frame.grid(row=0, column=0, sticky='nsew')
+# Main frame of the application
+main_frame = tk.Frame(window, bg=core.bg_colour)
+main_frame.grid(row=0, column=0, sticky='nsew')
+main_frame.rowconfigure(0, weight=1)
+main_frame.columnconfigure(0, weight=1)
+
+# Buttons grid frame
+grid_frame = tk.Frame(main_frame, bg='red')
+grid_frame.grid(row=0, column=0, columnspan=2)
 
 core.game_grid.frame = grid_frame
 def grid_buttons():
@@ -33,6 +43,14 @@ def grid_buttons():
             button.grid(row= button.x_index, column= button.y_index)
 
 grid_buttons()
+
+# Mine counter frame
+mines_frame = tk.Frame(main_frame)
+mines_frame.grid(row=1, column=1)
+
+core.game_grid.label_frame = mines_frame
+label = core.game_grid.create_label()
+label.grid(row=0, column=0)
 
 def button_clicked(button):
     if core.game_grid.check_grid():
