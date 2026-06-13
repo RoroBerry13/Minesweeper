@@ -24,49 +24,37 @@ class GridBlueprint():
         for i in range(self.mines):
             self.__generate_mine(button_x, button_y)
         self.__add_numbers()
-        print(blueprint.blueprint)
 
     def __generate_mine(self, button_x, button_y):
         '''This function creates a mine in a random coordinate'''
         random_x = random.randrange(0, self.rows)
         random_y = random.randrange(0, self.columns)
 
-        if random_x == button_x and random_y == button_y:
-            self.__generate_mine(button_x, button_y)
-        if self.blueprint[random_x][random_y] == 0:
+        # prevent a mine from generatnig in a 3x3 grid from the clicked button
+        temp_grid = [
+            [(button_x - 1, button_y - 1), (button_x - 1, button_y), (button_x - 1, button_y + 1)],
+            [(button_x, button_y - 1), (button_x, button_y), (button_x, button_y + 1)],
+            [(button_x + 1, button_y - 1), (button_x + 1, button_y), (button_x + 1, button_y + 1)]
+        ]
+
+        def check_temp_grid(temp_grid, random_x, random_y):
+            for row in temp_grid:
+                for tuple in row:
+                    if tuple == (random_x, random_y):
+                        return True
+            return False
+
+        if self.blueprint[random_x][random_y] == 0 and not check_temp_grid(temp_grid, random_x, random_y): # if the coords are not within the temporary grid, generate the mine
             self.blueprint[random_x][random_y] = '*'
-        else:
+        else: # if the coords of the mine are in the temporary grid or the cell != 0, generate a new coordinate
             self.__generate_mine(button_x, button_y)
+
+ 
 
     def __calculate_adjacent_mines(self, x, y):
         '''This function calculates the number of adjacent mines of each cell in a 3x3 grid'''
         # 3x3 grid of adjacent mines
-        temp_grid = [
-            ['', '', ''],
-            ['', self.blueprint[x][y], ''],
-            ['', '', '']
-        ]
-
-        # check x index
-        if not x - 1 < 0:
-            temp_grid[0][1] = self.blueprint[x-1][y]
-            if not y - 1 < 0:
-                temp_grid[0][0] = self.blueprint[x-1][y-1]
-            if not y + 1 > self.columns - 1:
-                temp_grid[0][2] = self.blueprint[x-1][y+1]
-
-        if not x + 1 > self.rows - 1:
-            temp_grid[2][1] = self.blueprint[x+1][y]
-            if not y - 1 < 0:
-                temp_grid[2][0] = self.blueprint[x+1][y-1]
-            if not y + 1 > self.columns - 1:
-                temp_grid[2][2] = self.blueprint[x+1][y+1]
-
-        # check y index
-        if not y - 1 < 0:
-            temp_grid[1][0] = self.blueprint[x][y-1]
-        if not y + 1 > self.columns - 1:
-            temp_grid[1][2] = self.blueprint[x][y+1]
+        temp_grid = create_temp_grid(x, y, self.blueprint)
 
         number_of_mines = 0
         for row in temp_grid:
@@ -149,32 +137,7 @@ class Cell(tk.Button):
         '''This function checks all the cells in a 3x3 area to clear any adjacent zeros'''
         self.is_visible = True
         # create temp 3x3 grid of adjacent cells
-        temp_grid = [
-            ['', '', ''],
-            ['', self, ''],
-            ['', '', '']
-        ]
-
-        # check x index
-        if not self.x_index - 1 < 0:
-            temp_grid[0][1] = game_grid.grid_cells[self.x_index-1][self.y_index]
-            if not self.y_index - 1 < 0:
-                temp_grid[0][0] = game_grid.grid_cells[self.x_index-1][self.y_index-1]
-            if not self.y_index + 1 > blueprint.columns - 1:
-                temp_grid[0][2] = game_grid.grid_cells[self.x_index-1][self.y_index+1]
-
-        if not self.x_index + 1 > blueprint.rows - 1:
-            temp_grid[2][1] = game_grid.grid_cells[self.x_index+1][self.y_index]
-            if not self.y_index - 1 < 0:
-                temp_grid[2][0] = game_grid.grid_cells[self.x_index+1][self.y_index-1]
-            if not self.y_index + 1 > blueprint.columns - 1:
-                temp_grid[2][2] = game_grid.grid_cells[self.x_index+1][self.y_index+1]
-
-        # check y index
-        if not self.y_index - 1 < 0:
-            temp_grid[1][0] = game_grid.grid_cells[self.x_index][self.y_index-1]
-        if not self.y_index + 1 > blueprint.columns - 1:
-            temp_grid[1][2] = game_grid.grid_cells[self.x_index][self.y_index+1]
+        temp_grid = create_temp_grid(self.x_index, self.y_index, game_grid.grid_cells)
 
         temp_grid[1][1] == ''
 
@@ -201,6 +164,37 @@ class Cell(tk.Button):
             else:
                 self.config(bg="blue", state="normal")
                 self.is_flagged = False
+
+def create_temp_grid(x, y, array):
+    cell = array[x][y]
+    temp_grid = [
+            ['', '', ''],
+            ['',cell , ''],
+            ['', '', '']
+        ]
+
+        # check x index
+    if not x - 1 < 0:
+        temp_grid[0][1] = array[x-1][y]
+        if not y - 1 < 0:
+            temp_grid[0][0] = array[x-1][y-1]
+        if not y + 1 > blueprint.columns - 1:
+            temp_grid[0][2] = array[x-1][y+1]
+
+    if not x + 1 > blueprint.rows - 1:
+        temp_grid[2][1] = array[x+1][y]
+        if not y - 1 < 0:
+            temp_grid[2][0] = array[x+1][y-1]
+        if not y + 1 > blueprint.columns - 1:
+            temp_grid[2][2] = array[x+1][y+1]
+
+    # check y index
+    if not y - 1 < 0:
+        temp_grid[1][0] = array[x][y-1]
+    if not y + 1 > blueprint.columns - 1:
+        temp_grid[1][2] = array[x][y+1]
+
+    return temp_grid
     
 blueprint = GridBlueprint(10, 10, 10)
 game_grid = GameGrid()

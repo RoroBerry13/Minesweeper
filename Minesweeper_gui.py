@@ -2,13 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 import Minesweeper_core as core
 
-run_game = True
-
 window = tk.Tk()
-window.geometry('800x800')
+window.geometry('800x875')
 
 menu = tk.Menu(window)
 window.config(menu=menu)
+window.rowconfigure(0, weight=1)
+window.columnconfigure(0, weight=1)
 
 file_menu = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="File", menu=file_menu)
@@ -23,8 +23,6 @@ file_menu.add_command(label="Exit", command=window.quit)
 
 grid_frame = tk.Frame(window, bg='red')
 grid_frame.grid(row=0, column=0, sticky='nsew')
-grid_frame.rowconfigure(0, weight=1)
-grid_frame.columnconfigure(0, weight=1)
 
 core.game_grid.frame = grid_frame
 def grid_buttons():
@@ -44,6 +42,7 @@ def button_clicked(button):
     button.is_visible = True
     if button.is_mine:
         button.config(bg="red")
+        disable_all_buttons()
         retry = messagebox.askokcancel("Game Over", "You Lost! Would you like to play again?")
         if retry:
             new_game()
@@ -53,8 +52,15 @@ def button_clicked(button):
         button.config(bg="white", text=button.value)
     game_won = core.game_grid.check_game_won()
     if game_won:
+        disable_all_buttons()
         play_again = messagebox.askokcancel("You won!", "Play again?")
         if play_again:
             new_game()
+
+def disable_all_buttons():
+    for row in core.game_grid.grid_cells:
+        for button in row:
+            button.config(state="disabled")
+            button.unbind('<Button-3>')
 
 window.mainloop()
