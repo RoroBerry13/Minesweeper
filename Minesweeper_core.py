@@ -3,12 +3,36 @@ import random
 
 class GridBlueprint():
     def __init__(self, row= 5, column= 5, mines= 5):
-        self.rows = row
-        self.columns = column
+        self.__rows = row
+        self.__columns = column
         self.blueprint = []
-        self.mines = mines
+        self.__mines = mines
 
         self.create_empty_grid()
+
+    @property
+    def rows(self):
+        return self.__rows
+    
+    @rows.setter
+    def rows(self, new_rows):
+        self.__rows = new_rows
+
+    @property
+    def columns(self):
+        return self.__columns
+    
+    @columns.setter
+    def columns(self, new_columns):
+        self.__columns = new_columns
+
+    @property
+    def mines(self):
+        return self.__mines
+    
+    @mines.setter
+    def mines(self, new_mines):
+        self.__mines = new_mines
 
     def create_empty_grid(self):
         '''This function creates an empty grid'''
@@ -132,14 +156,30 @@ class GameGrid:
 class Cell(tk.Button):
     def __init__(self, x_index, y_index, master = None, bg ='white', command = "", compound = "none", cursor = "", default = "disabled", font = "TkDefaultFont", height = 0, image = "", justify = "center", overrelief = "", state = "normal", takefocus = "", text = "", underline = -1, width = 0, wraplength = 0):
         super().__init__(master, bg=bg, command=command, compound=compound, cursor=cursor, default=default, font=font, height=height, image=image, justify=justify, overrelief=overrelief, state=state, takefocus=takefocus, text=text, underline=underline, width=width, wraplength=wraplength)
-        self.x_index= x_index
-        self.y_index= y_index
+        self.__x_index= x_index
+        self.__y_index= y_index
         self.value = blueprint.blueprint[x_index][y_index]
         self.is_visible = False
         self.is_mine = False
         self.is_flagged = False
 
         self.bind('<Button-3>', self.flag_cell)
+
+    @property
+    def x_index(self):
+        return self.__x_index
+    
+    @x_index.setter
+    def x_index(self, new_x):
+        self.__x_index = new_x
+
+    @property
+    def y_index(self):
+        return self.__y_index
+    
+    @y_index.setter
+    def y_index(self, new_y):
+        self.__y_index = new_y
 
     def clear_adjacent_zeros(self):
         '''This function checks all the cells in a 3x3 area to clear any adjacent zeros'''
